@@ -75,7 +75,7 @@ public:
                 i++;
             }
         }
-        std::cout << sec_begin << " " << sec_end << "\n";
+
         if (sec_begin == -1 || sec_end == -1) {
             throw std::runtime_error("Section not found");
         }
@@ -87,10 +87,6 @@ public:
             else {
                 sec_vec.push_back(vec[i]);
             }
-        }
-
-        for (int i = 0; i < sec_vec.size(); i++) {
-            std::cout << sec_vec[i] << " ";
         }
 
         std::string str;
@@ -113,10 +109,6 @@ public:
         }
 
         for (int i = 0; i < sec_vec.size(); i++) {
-            std::cout << sec_vec[i] << " ";
-        }
-
-        for (int i = 0; i < sec_vec.size(); i++) {
             if (sec_vec[i].empty()) {
                 sec_vec.erase(sec_vec.begin() + i);
                 i--;
@@ -130,7 +122,6 @@ public:
         for (int i = 0; i < sec_vec.size(); i++) {
             try {
                 int num = std::stoi(sec_vec[i]);
-                std::cout << num << std::endl;
                 return num;
             }
             catch (const std::invalid_argument&) {
