@@ -5,10 +5,11 @@
 int main()
 {
     setlocale(LC_ALL, "Russian");
-
+    
     try {
         parser parser("ini.txt");
-        int value = parser.get_value<int>("Section4");
+        parser.get_vec();
+        auto value = parser.get_value<int>("Section1");
         std::cout << "Value: " << value << std::endl;
     }
     catch (const std::exception& e) {
