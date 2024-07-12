@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <sstream>
 #include <cctype>
 #include <stdexcept>
@@ -13,6 +14,7 @@ bool startsWith(const std::string& s) {
 
 class parser {
 private:
+    std::map < std::string, std::map<std::string, std::string>> map;
     std::vector<std::string> vec = {};
     std::string filename;
 
@@ -25,20 +27,63 @@ public:
         }
         else {
             std::string str;
-            while (std::getline(file, str)) {
+            std::string tem_var;
+            std::string line;
+            std::getline(file, str);
+            while (!file.eof()) {
                 if (str.empty() || str[0] == ';') {
                     continue;
                 }
-                else {
-                    this->vec.push_back(str);
+
+                else if(str[0] == '[') {
+                    std::string sec_name = str;
+                    line = str;
+                    tem_var = "";
+                    while (true) {
+                        getline(file, str);
+                        tem_var = str;
+                        if (!file.eof()) {
+                            if (tem_var.empty() || tem_var[0] == ';' || tem_var[0] == ' ') {
+                                continue;
+                            }
+                            else if (tem_var[0] == '[') {
+                                sec_name = str;
+                                break;
+                            }
+                            else {
+                                std::string tem_var1;
+                                for (int i = tem_var.find('=') + 1; i < tem_var.size(); i++) {
+                                    if (tem_var[i] == ';') {
+                                        break;
+                                    }
+                                    tem_var1 += tem_var[i];
+                                }
+
+                                try {
+                                    int num = stoi(tem_var1);
+                                    map[sec_name] = std::map<std::string, std::string>{ {"Int", tem_var1} };
+                                }
+                                catch (const std::invalid_argument&) {
+                                    if (tem_var1.empty()) {
+                                        continue;
+                                    }
+                                    map[sec_name] = std::map<std::string, std::string>{ {"String", tem_var1} };
+                                    continue;
+                                }
+                            }
+                        }
+                        else {
+                            break;
+                        }
+                    }
                 }
             }
         }
     }
 
     void get_vec() {
-        for (int i = 0; i < vec.size(); i++) {
-            std::cout << vec[i] << "\n";
+        if (map["[Section2]"]["Int"].empty()) {
+            std::cout << "lalala";
         }
     }
 
@@ -49,85 +94,6 @@ public:
 
     template<>
     int get_value(std::string sec_name) {
-        if (vec.size() == 0) {
-            throw std::runtime_error("Value not found");
-        }
-        std::vector<std::string> sec_vec = {};
-
-        int sec_begin = -1;
-        int sec_end = -1;
-        std::string variable_str;
-        int i = 0;
-        while (i < vec.size()) {
-            if (vec[i] == "[" + sec_name + "]") {
-                sec_begin = i;
-                
-                for (int j = i + 1; j < vec.size(); j++) {
-                    variable_str = vec[j];
-                    if (variable_str.find('[') != std::string::npos || j == vec.size() - 1) {
-                        sec_end = j;
-                        i = j;
-                        break;
-                    }
-                }
-            } 
-            else {
-                i++;
-            }
-        }
-
-        if (sec_begin == -1 || sec_end == -1) {
-            throw std::runtime_error("Section not found");
-        }
-
-        for (int i = sec_begin + 1; i < sec_end + 1; i++) {
-            if (vec[i].empty() || vec[i][0] == ';') {
-                continue;
-            }
-            else {
-                sec_vec.push_back(vec[i]);
-            }
-        }
-
-        std::string str;
-        std::string str1;
-        for (int i = 0; i < sec_vec.size(); i++) {
-            str = sec_vec[i];
-            for (int j = str.find('=') + 1; j < str.size(); j++) {
-                if (str[j] == ';') {
-                    break;
-                }
-                else if (str[j] == '[') {
-                    break;
-                }
-                else {
-                    str1 += str[j];
-                }
-            }
-            sec_vec[i] = str1;
-            str1 = "";
-        }
-
-        for (int i = 0; i < sec_vec.size(); i++) {
-            if (sec_vec[i].empty()) {
-                sec_vec.erase(sec_vec.begin() + i);
-                i--;
-            }
-        }
-
-        if (sec_vec.empty()) {
-            throw std::runtime_error("Value not found");
-        }
-
-        for (int i = 0; i < sec_vec.size(); i++) {
-            try {
-                int num = std::stoi(sec_vec[i]);
-                return num;
-            }
-            catch (const std::invalid_argument&) {
-                continue;
-            }
-        }
-        throw std::runtime_error("Value not found");
+        return 0;
     }
 };
