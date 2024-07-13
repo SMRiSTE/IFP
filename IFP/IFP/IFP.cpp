@@ -7,7 +7,12 @@ int main()
     setlocale(LC_ALL, "Russian");
     
     parser parser("ini.txt");
-    parser.get_vec();
-    auto value = parser.get_value<int>("[Section2]");
-    std::cout << "Value: " << value << std::endl;
+    //parser.get_vec();
+    try {
+        auto value = parser.get_value<int>("Section5");
+        std::cout << "Value: " << value << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 }

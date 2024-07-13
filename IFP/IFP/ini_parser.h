@@ -14,7 +14,7 @@ bool startsWith(const std::string& s) {
 
 class parser {
 private:
-    std::map < std::string, std::map<std::string, std::string>> map;
+    std::map < std::string, std::map<int, std::string>> map;
     std::vector<std::string> vec = {};
     std::string filename;
 
@@ -30,7 +30,9 @@ public:
             std::string tem_var;
             std::string line;
             std::getline(file, str);
+            int index;
             while (!file.eof()) {
+                index = 0;
                 if (str.empty() || str[0] == ';') {
                     continue;
                 }
@@ -39,10 +41,9 @@ public:
                     std::string sec_name = str;
                     line = str;
                     tem_var = "";
-                    while (true) {
+                    while (!file.eof()) {
                         getline(file, str);
                         tem_var = str;
-                        if (!file.eof()) {
                             if (tem_var.empty() || tem_var[0] == ';' || tem_var[0] == ' ') {
                                 continue;
                             }
@@ -56,35 +57,29 @@ public:
                                     if (tem_var[i] == ';') {
                                         break;
                                     }
-                                    tem_var1 += tem_var[i];
-                                }
-
-                                try {
-                                    int num = stoi(tem_var1);
-                                    map[sec_name] = std::map<std::string, std::string>{ {"Int", tem_var1} };
-                                }
-                                catch (const std::invalid_argument&) {
-                                    if (tem_var1.empty()) {
+                                    else if (tem_var[i] == ' ') {
                                         continue;
                                     }
-                                    map[sec_name] = std::map<std::string, std::string>{ {"String", tem_var1} };
-                                    continue;
+                                    tem_var1 += tem_var[i];
                                 }
+                                if (!map.count(sec_name)) {
+                                    map[sec_name] = std::map<int, std::string>{ {index , tem_var1} };
+                                }
+
+                                map[sec_name][index] = tem_var1;
                             }
-                        }
-                        else {
-                            break;
-                        }
+                            index++;
                     }
                 }
             }
         }
     }
 
-    void get_vec() {
-        if (map["[Section2]"]["Int"].empty()) {
-            std::cout << "lalala";
+    int get_vec() {
+        for (int i = map["[Section1]"].size() - 1; i > -1; i--) {
+            std::cout << map["[Section1]"][i];
         }
+        return 0;
     }
 
     template<class T>
@@ -94,6 +89,26 @@ public:
 
     template<>
     int get_value(std::string sec_name) {
-        return 0;
+        sec_name = "[" + sec_name + "]";
+        if (!map.count(sec_name)) {
+            throw std::runtime_error("Section not found");
+        }
+
+        for (int i = 0; i < map[sec_name].size(); i++) {
+            if (map[sec_name][i].empty()) {
+                continue;
+            }
+            else {
+                try {
+                    int num = std::stoi(map[sec_name][i]);
+                    return num;
+                }
+                catch (const std::invalid_argument&) {
+                    continue;
+                }
+            }
+        }
+
+        throw std::runtime_error("Value not found in section");
     }
 };
