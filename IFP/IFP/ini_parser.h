@@ -111,4 +111,29 @@ public:
 
         throw std::runtime_error("Value not found in section");
     }
+
+    template<>
+    std::string get_value(std::string sec_name) {
+        sec_name = "[" + sec_name + "]";
+        if (!map.count(sec_name)) {
+            throw std::runtime_error("Section not found");
+        }
+
+        for (int i = 0; i < map[sec_name].size(); i++) {
+            if (map[sec_name][i].empty()) {
+                continue;
+            }
+            else {
+                try {
+                    int num = std::stoi(map[sec_name][i]);
+                    continue;
+                }
+                catch (const std::invalid_argument&) {
+                    return map[sec_name][i];
+                }
+            }
+        }
+
+        throw std::runtime_error("Value not found in section");
+    }
 };

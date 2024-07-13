@@ -17,8 +17,3 @@ Vid=
 [Section1]
 var3=значение
 var1=7.0 ; переприсваиваем значение
-
-[Section5]
-
-ldlz=52
-fghjk=hyi

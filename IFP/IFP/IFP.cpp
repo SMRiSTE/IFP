@@ -9,7 +9,7 @@ int main()
     parser parser("ini.txt");
     //parser.get_vec();
     try {
-        auto value = parser.get_value<int>("Section5");
+        auto value = parser.get_value<int>("Section1");
         std::cout << "Value: " << value << std::endl;
     }
     catch (const std::exception& e) {
